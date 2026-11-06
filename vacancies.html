@@ -76,8 +76,8 @@
       if (!response.ok) throw new Error("HTTP " + response.status);
       const data = await response.json();
       if (!Array.isArray(data)) throw new Error("Unexpected vacancies response");
-      // Defense in depth: the API must also enforce Published-only filtering.
-      const published = data.filter(v => v && v.status === "Published");
+      // The server endpoint enforces Published-only and non-expired filtering.
+      const published = data.filter(v => v && Number.isInteger(v.id) && typeof v.jobTitle === "string");
       if (!published.length) { setStatus("No vacancies are currently published. Please check back for updates."); return; }
       list.replaceChildren();
       published.forEach(v => {
